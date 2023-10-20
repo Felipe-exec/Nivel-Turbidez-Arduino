@@ -4,9 +4,11 @@
 
    Sensor de Turbidez com Arduino
 
-   Autor: Eng. Wagner Rambo
+   Autor original: Eng. Wagner Rambo
+   Modificações no display: Felipe Sacramento
 
    Data: Agosto de 2018
+   Última atualização: Outubro de 2023
 
 
    A turbidez pode ser entendida como a medida do espalhamento 
@@ -52,30 +54,32 @@ double NTU = 0.0;
 // --- Configurações Iniciais ---
 void setup() 
 {
-  Serial.begin(115200);
-
-  
+   Serial.begin(115200);
 } //end setup
-
 
 // ==================================================================================================================
 // --- Loop Infinito ---
 void loop() 
 {
-  int sensorValue = analogRead(A0); 
-  float voltage = sensorValue * (5.0 / 1024.0);  
+   int sensorValue = analogRead(A0); 
+   float voltage = sensorValue * (5.0 / 1024.0);  
 
-  NTU = calc_NTU(voltage);
+   NTU = calc_NTU(voltage);
   
-  Serial.print(voltage);  
-  Serial.print(" | ");
-  Serial.println(NTU);
-
-  
-  delay(741);
+   Serial.print(voltage);  
+   Serial.print(" | ");
+   Serial.println(NTU);
+   
+   if (NTU < 10) {
+      Serial.println("Água Limpa.");
+   } else if (NTU >= 10 && NTU < 100) {
+      Serial.println("Água Suja.");
+   } else {
+      Serial.println("Água Muito Suja.");
+   }
+   delay(741);
   
 } //end loop
-
 
 // ==================================================================================================================
 // --- Função para conversão de tensão para Turbidez em NTU ---
@@ -84,14 +88,11 @@ void loop()
 //
 double calc_NTU(double volt)
 {
+   double NTU_val;
 
-  double NTU_val;
+   NTU_val = -(1120.4*volt*volt)+(5742.3*volt)-4352.9;
 
-  NTU_val = -(1120.4*volt*volt)+(5742.3*volt)-4352.9;
-
-  return NTU_val;
-  
-  
+   return NTU_val;
 } //end calc_NTU
 
 
